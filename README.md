@@ -78,7 +78,7 @@ Estratégia de conversão onde são considerados Caixas de Texto. Cada caixa de 
 
 * *CSV Convertido*
 
-    | Portador                           	| Descricao    	| Valor              	| Juros    	| ... 	|
+    | Portador                           	| Descricao    	| Valor Juros         	|        	| ... 	|
     |-----------------------------------	|-------------	|-------------------	|----------	|-----	|
     | BB PARC EMPRESTIMO <br>REF 10/2019	|            	| R$ 896.43 R$ 23.45	|        	| ... 	|
     |                                   	| ...         	| ...                	|          	| ... 	|
