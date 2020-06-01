@@ -89,3 +89,22 @@ Estratégia de conversão onde são considerados Caixas de Texto. Cada caixa de 
 
 ### 3. LTTextBoxHorizontal (Quebras como Múltiplas Células/Colunas)
 
+
+Estratégia de conversão onde são considerados Caixas de Texto, mas diferente da Estratégia 2, cada quebra de linha ocupa uma coluna nova na mesma linha.
+
+
+* *PDF Original*
+
+    | Portador 	| Descricao                       	| Valor     	| Juros    	| ... 	|
+    |----------	|---------------------------------	|-----------	|----------	|-----	|
+    | BB       	| PARC EMPRESTIMO <br>REF 10/2019 	| R$ 896.43 	| R$ 23.45 	| ... 	|
+    |          	| ...                             	| ...       	|          	| ... 	|
+
+* *CSV Convertido*
+
+    | Portador 	| Descricao        |               	| Valor     	| Juros    	| ... 	|
+    |----------	|------------------|---------------	|-----------	|----------	|-----	|
+    | BB       	| PARC EMPRESTIMO  | REF 10/2019 	| R$ 896.43 	| R$ 23.45 	| ... 	|
+    |          	| ...              |               	| ...       	|          	| ... 	|
+
+> Note que por conta da quebra de linha no campo descrição foi gerada uma nova coluna para descrição.
