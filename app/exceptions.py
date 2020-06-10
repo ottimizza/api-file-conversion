@@ -1,3 +1,5 @@
+import werkzeug
+
 class IllegalArgumentsException(werkzeug.exceptions.HTTPException):
     code = 400
     description = 'Not enough storage space.'
