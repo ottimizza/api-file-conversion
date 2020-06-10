@@ -1,5 +1,6 @@
 import os
 from flask import abort, Blueprint, g, jsonify, render_template, request, Response
+from flask_cors import cross_origin
 from werkzeug.utils import secure_filename
 
 
