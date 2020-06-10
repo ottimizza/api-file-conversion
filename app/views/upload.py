@@ -75,7 +75,7 @@ def upload_files():
         .parse() \
         .write()
 
-    return send_file(current_app.config['UPLOAD_FOLDER'], attachment_filename='out.csv')
+    return send_file(outpath, attachment_filename='out.csv')
 
 # if uploaded_file and allowed_file(uploaded_file.filename):
 #     filename = secure_filename(uploaded_file.filename)
