@@ -26,7 +26,7 @@ class ParseStrategyA(ParseStrategy):
 
     def build_cell(self, layout_object, bbox):
         print(layout_object.get_text())
-        content = layout_object.get_text().replace('\r\n', '')
+        content = layout_object.get_text().replace('\n', ' ').replace('\r', '') 
         coordinates = Coordinate.from_bbox(bbox)
         return Cell('', content, coordinates)
 
@@ -65,7 +65,7 @@ class ParseStrategyB(ParseStrategy):
         return (x1, y1, x2, y2)
 
     def build_cell(self, layout_object, bbox):
-        content = layout_object.get_text().replace('\r\n', ' ')
+        content = layout_object.get_text().replace('\n', ' ').replace('\r', '') 
         coordinates = Coordinate.from_bbox(bbox)
         return Cell('', content, coordinates)
 
@@ -102,7 +102,7 @@ class ParseStrategyC(ParseStrategy):
         return (x1, y1, x2, y2)
 
     def build_cell(self, layout_object, bbox):
-        content = layout_object.get_text().replace('\r\n', ';')
+        content = layout_object.get_text().replace('\n', ' ').replace('\r', '') 
         coordinates = Coordinate.from_bbox(bbox)
         return Cell('', content, coordinates)
 
@@ -139,7 +139,7 @@ class ParseStrategyD(ParseStrategy):
         return (x1, y1, x2, y2)
 
     def build_cell(self, layout_object, bbox):
-        content = layout_object.get_text().replace('\r\n', '')
+        content = layout_object.get_text().replace('\n', ' ').replace('\r', '') 
         coordinates = Coordinate.from_bbox(bbox)
         return Cell('', content, coordinates)
 
