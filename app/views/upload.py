@@ -22,9 +22,9 @@ def get_request_files():
     else:
         raise IllegalArgumentsException("No file provided!")
 
-@upload_blueprint.errorhandler(app.exceptions.IllegalArgumentsException)
+@upload_blueprint.errorhandler(IllegalArgumentsException)
 def illegal_arguments_exception_handler(exception):
-    return 
+    return { "error": "illegal_arguments" }
 
 @upload_blueprint.route('/api/v1/conversions/upload', methods=['POST'])
 @cross_origin()
