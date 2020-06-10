@@ -1,6 +1,5 @@
 appdirs==1.4.4
 attrs==19.3.0
-autopep8==1.5.3
 click==7.1.2
 Flask==1.1.2
 itsdangerous==1.1.0
