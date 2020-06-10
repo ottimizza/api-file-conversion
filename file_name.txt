@@ -8498,3 +8498,6 @@
 2020-06-01T17:19:18.489704+00:00 app[web.1]: Status        -> 200
 2020-06-01T17:19:18.489705+00:00 app[web.1]: Body          -> {"record":{"id":7572,"username":"implantacao@gestorservicos.com.br","email":"implantacao@gestorservicos.com.br","phone":null,"firstName":"Implantação","lastName":null,"type":1,"activated":true,"avatar":null,"organization":{"id":11065,"externalId":"6cd0f5bd-df92-4497-960e-c871ba873ee2","name":"GESTOR SERVIÇOS CONTABEIS EIRELI","type":1,"cnpj":"13963088000199","codigoERP":null,"email":null,"avatar":null,"organizationId":null}}}
 2020-06-01T17:19:18.812400+00:00 heroku[router]: at=info method=POST path="/services/documentos/buscar?page_size=50&page_index=0" host=api.tareffa.com.br request_id=86c6c6e9-92de-4673-a01d-c05ce7ddace6 fwd="177.75.152.36" dyno=web.1 connect=0ms service=372ms status=200 bytes=227191 protocol=https
+
+
+
