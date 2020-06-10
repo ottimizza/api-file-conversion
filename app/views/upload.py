@@ -1,5 +1,5 @@
 import os
-from flask import abort, Blueprint, g, jsonify, render_template, request, Response
+from flask import abort, Blueprint, g, jsonify, render_template, request, Response, send_file
 from flask_cors import cross_origin
 from werkzeug.utils import secure_filename
 
@@ -37,16 +37,39 @@ def upload_files():
     except:
         return jsonify({"error": "illegal_arguments", "error_description": "No file provided!"})
 
+
+    f = files[0]
+
     # files iteration and validation
-    for f in files:
-        filename = secure_filename(f.filename)
-        f.save(os.path.join(UPLOAD_FOLDER, filename))
+    # for f in files:
+    filename = secure_filename(f.filename)
+    filepath = os.path.join(UPLOAD_FOLDER, filename)
 
-        details['files'].append(filename)
-        
+    f.save(filepath)
 
-    # if uploaded_file and allowed_file(uploaded_file.filename):
-    #     filename = secure_filename(uploaded_file.filename)
-    #     uploaded_file.save(os.path.join(UPLOAD_FOLDER, filename))
-        
-    return { "details": details }
+    # create temporary file
+    # tempfile = view_utilities.create_tempfile()
+    # try: 
+    #     # f.save(os.path.join(UPLOAD_FOLDER, filename))
+    # finally:
+    #     os.unlink(tempfile.name)
+    #     tempfile.close()
+
+
+    # process the tmp file and returns a temporary csv 
+    from conversion import PDFConverter, PDFConverterConfig
+    from conversion.strategy import ParseStrategyA
+    
+    config = PDFConverterConfig()
+    strategy = ParseStrategyA()
+
+    outpath = PDFConverter(filepath, strategy, config) \
+        .parse() \
+        .write()
+
+    return send_file(UPLOAD_FOLDER, attachment_filename='out.csv')
+
+# if uploaded_file and allowed_file(uploaded_file.filename):
+#     filename = secure_filename(uploaded_file.filename)
+#     uploaded_file.save(os.path.join(UPLOAD_FOLDER, filename))
+# return { "details": details }
