@@ -31,7 +31,8 @@ def illegal_arguments_exception_handler(exception):
 @cross_origin()
 def upload_files():
     details = { "files": [] }
-
+    files = []
+    
     try:
         print("getting files...")
         files = get_request_files()
@@ -41,7 +42,6 @@ def upload_files():
     print("print getting first from array")
 
     f = files[0]
-
 
     print("setting up names")
     # files iteration and validation
