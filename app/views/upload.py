@@ -32,12 +32,14 @@ def illegal_arguments_exception_handler(exception):
 def upload_files():
     details = { "files": [] }
     files = []
-    
-    try:
-        print("getting files...")
-        files = get_request_files()
-    except:
-        return jsonify({"error": "illegal_arguments", "error_description": "No file provided!"})
+
+    if 'file' in request.files:
+        files = [ request.files['file'] ]
+    elif 'file[]' in request.files:
+        files = request.files.getlist("file[]")
+    else:
+        raise IllegalArgumentsException("No file provided!")
+        # return jsonify({"error": "illegal_arguments", "error_description": "No file provided!"})
 
     print("print getting first from array")
 
