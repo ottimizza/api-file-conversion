@@ -1,5 +1,5 @@
 import os
-from flask import abort, Blueprint, g, jsonify, render_template, request, Response, send_file, app
+from flask import abort, Blueprint, g, jsonify, render_template, request, Response, send_file, current_app
 from flask_cors import cross_origin
 from werkzeug.utils import secure_filename
 
@@ -48,7 +48,7 @@ def upload_files():
     # files iteration and validation
     # for f in files:
     filename = secure_filename(f.filename)
-    filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+    filepath = os.path.join(current_app.config['UPLOAD_FOLDER'], filename)
 
     print("saving files...")
 
@@ -75,7 +75,7 @@ def upload_files():
         .parse() \
         .write()
 
-    return send_file(app.config['UPLOAD_FOLDER'], attachment_filename='out.csv')
+    return send_file(current_app.config['UPLOAD_FOLDER'], attachment_filename='out.csv')
 
 # if uploaded_file and allowed_file(uploaded_file.filename):
 #     filename = secure_filename(uploaded_file.filename)
