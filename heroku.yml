@@ -1,0 +1,8 @@
+build:
+  docker:
+    web: Dockerfile
+
+# If you don’t include a run section, 
+# Heroku uses the CMD specified in the Dockerfile.  
+# run:
+#   web: 
