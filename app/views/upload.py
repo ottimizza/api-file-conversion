@@ -33,17 +33,23 @@ def upload_files():
     details = { "files": [] }
 
     try:
+        print("getting files...")
         files = get_request_files()
     except:
         return jsonify({"error": "illegal_arguments", "error_description": "No file provided!"})
 
+    print("print getting first from array")
 
     f = files[0]
 
+
+    print("setting up names")
     # files iteration and validation
     # for f in files:
     filename = secure_filename(f.filename)
     filepath = os.path.join(UPLOAD_FOLDER, filename)
+
+    print("saving files...")
 
     f.save(filepath)
 
@@ -55,6 +61,7 @@ def upload_files():
     #     os.unlink(tempfile.name)
     #     tempfile.close()
 
+    print("starting conversion...")
 
     # process the tmp file and returns a temporary csv 
     from conversion import PDFConverter, PDFConverterConfig
