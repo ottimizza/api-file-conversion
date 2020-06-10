@@ -131,5 +131,5 @@ class CSVBuilder:
                     f.write(('%s' + CSV_DELIMITER) % self._cells[cell_name].content
                         if cell_name in self._cells else CSV_DELIMITER)
 
-                f.write('\n')
+                f.write('\r\n')
 
