@@ -1,5 +1,5 @@
 import os
-from flask import abort, Blueprint, g, jsonify, render_template, request, Response, send_file, current_app
+from flask import abort, Blueprint, g, jsonify, render_template, request, Response, send_file, current_app, after_this_request
 from flask_cors import cross_origin
 from werkzeug.utils import secure_filename
 
