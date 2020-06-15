@@ -70,6 +70,8 @@ class PDFConverter:
         self.strategy = config.strategy()
         self.config = config
 
+        # um dicionario contendo as celulas relacionadas a cada pagina numerada
+        self.pages = {}
         self.cells = []
         
     @property
@@ -123,7 +125,9 @@ class PDFConverter:
             self.interpreter.process_page(page)
             layout = self.device.get_result()
 
-            self.cells = self.strategy.parse(layout, page)
+            self.pages[index] = self.strategy.parse(layout, page)
+
+            # self.cells = self.strategy.parse(layout, page)
 
         return self
 
@@ -134,12 +138,13 @@ class PDFConverter:
             "delimiter": self.config.delimiter()
         }
 
-        # BUILDER 
-        #
-        #
-        csv_builder = CSVBuilder(**opts)
-        csv_builder.build(self.cells)
-        csv_builder.write(self.csv_file)
+        for page_index in self.pages.keys():
+            csv_builder = CSVBuilder(**opts)
+
+            cells = self.pages[page_index] # self.cells
+
+            csv_builder.build(cells)
+            csv_builder.write(self.csv_file)
 
         return self.csv_file
 
