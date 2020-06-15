@@ -3,6 +3,9 @@ from conversion.models import Cell, Column
 LINE_MARGIN = 2
 
 class CSVBuilder:
+
+    MODE_APPEND = "a"
+
     def __init__(self, **kwargs):
         self._cells = {}
         self._columns = []
@@ -13,9 +16,8 @@ class CSVBuilder:
         ## 
         ##
         self.delimiter = kwargs.get("delimiter", ";")
+        self.encoding = kwargs.get("encoding", "UTF-8")
 
-
-        
     def build(self, cells: [Cell]):
         cells.sort(key=lambda cell: (cell.coordinates.y1, cell.coordinates.x1))
 
@@ -86,6 +88,9 @@ class CSVBuilder:
 
     def cell_exists(self, cell_name):
         return cell_name in self._cells
+
+    def get_cell(self, cell_name):
+        return self._cells[cell_name]
     
     ## # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
     ## 
@@ -123,17 +128,28 @@ class CSVBuilder:
     def write(self, csv_file):
         self._columns.sort(key=lambda c: c.x1)
 
-        CSV_FILE = csv_file
-        CSV_ENCODING = "UTF-8"
-        CSV_DELIMITER = self.delimiter
+        delimiter = self.delimiter
+        encoding = self.encoding
 
-        with open(CSV_FILE, "a", encoding=CSV_ENCODING) as f:
-            for row in range(self.current_row() + 1):
+
+        CSV_FILE = csv_file
+
+
+        with open(CSV_FILE, "a", encoding=encoding) as f:
+
+            # the total number of rows
+            len_rows = self.current_row() + 1
+
+            for row in range(len_rows):
+                
                 for column in self._columns:
                     cell_name = '%s::%s' % (str(column.name), str(row))
 
-                    f.write(('%s' + CSV_DELIMITER) % self._cells[cell_name].content
-                        if cell_name in self._cells else CSV_DELIMITER)
+                    if cell_name in self._cells:
+                        f.write(self.get_cell(cell_name).content)
 
+                    # puts the delimiter at the end.
+                    f.write(delimiter)
+                
                 f.write('\r\n')
 

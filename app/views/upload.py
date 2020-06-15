@@ -9,27 +9,21 @@ from settings import UPLOAD_FOLDER, UPLOAD_ALLOWED_EXTENSIONS
 
 import app.views.utils as view_utilities
 
+from conversion import PDFConverter
+from conversion.config import PDFConverterConfig
+
+
 
 upload_blueprint = Blueprint('upload', __name__)
-
-def get_request_files():
-    files = []
-
-    if 'file' in request.files:
-        files = [ request.files['file'] ]
-    elif 'file[]' in request.files:
-        files = request.files.getlist("file[]")
-    else:
-        raise IllegalArgumentsException("No file provided!")
 
 @upload_blueprint.errorhandler(IllegalArgumentsException)
 def illegal_arguments_exception_handler(exception):
     return { "error": "illegal_arguments" }
 
+
 @upload_blueprint.route('/api/v1/conversions/upload', methods=['POST'])
 @cross_origin()
 def upload_files():
-    details = { "files": [] }
     files = []
     opts = {}
 
@@ -39,58 +33,42 @@ def upload_files():
         files = request.files.getlist("file[]")
     else:
         raise IllegalArgumentsException("No file provided!")
-        # return jsonify({"error": "illegal_arguments", "error_description": "No file provided!"})
+
 
     if 'opts' in request.form:
-        opts = request.form['opts']
+        import json
+        opts = json.loads(request.form['opts'])
     else:
-        opts = {
-            "strategy": "",
-            "delimiter": ";",
-            "pages": "[0-5]",
-            "password": None,
-            "trim": True,
-            "shrink": False
-        }
+        opts = PDFConverterConfig.default_opts()
     
-    print("print getting first from array")
-
     f = files[0]
 
-    print("setting up names")
-    # files iteration and validation
-    # for f in files:
     filename = secure_filename(f.filename)
     filepath = os.path.join(current_app.config['UPLOAD_FOLDER'], filename)
-
-    print("saving files...")
-
     f.save(filepath)
 
-    # create temporary file
+    #
+    # for f in files:
     # tempfile = view_utilities.create_tempfile()
     # try: 
     #     # f.save(os.path.join(UPLOAD_FOLDER, filename))
     # finally:
     #     os.unlink(tempfile.name)
     #     tempfile.close()
+    # 
 
-    print("starting conversion...")
+    # Conversão de Arquivos...
+    #
+    # instancia do conversor de pdf.
+    converter = PDFConverter(filepath, PDFConverterConfig(**opts))
 
-    # process the tmp file and returns a temporary csv 
-    from conversion import PDFConverter, PDFConverterConfig
-    from conversion.strategy import ParseStrategyA
-    
-    config = PDFConverterConfig(**opts)
-    strategy = ParseStrategyA()
+    # começa a conversão do pdf para csv.
+    converter.parse()
 
-    outpath = PDFConverter(filepath, strategy, config) \
-        .parse() \
-        .write()
+    # constroi o csv a partir das celulas extraidas do pdf.
+    converter.write()
+
+    # caminho para o arquivo convertido (.csv)
+    outpath = converter.csv_file
 
     return send_file(outpath, attachment_filename='out.csv')
-
-# if uploaded_file and allowed_file(uploaded_file.filename):
-#     filename = secure_filename(uploaded_file.filename)
-#     uploaded_file.save(os.path.join(UPLOAD_FOLDER, filename))
-# return { "details": details }

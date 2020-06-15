@@ -47,6 +47,8 @@
 
 # from conversion.strategy import ParseStrategyA
 from conversion.builder import CSVBuilder
+from conversion.config import PDFConverterConfig
+from conversion.utils import CustomArrayParser
 
 from pdfminer.pdfparser import PDFParser
 from pdfminer.pdfdocument import PDFDocument
@@ -59,64 +61,13 @@ from pdfminer.layout import LAParams
 from pdfminer.converter import PDFPageAggregator
 import pdfminer
 
-class PDFConverterConfig:
-
-    DELIMITER_PIPE = "|"
-    DELIMITER_COMMA = ","
-    DELIMITER_SEMICOLON = ";"
-
-    def __init__(self, **kwargs):
-        """
-        """
-        self._strategy = kwargs.get("strategy")
-        self._delimiter = kwargs.get("delimiter", PDFConverterConfig.DELIMITER_SEMICOLON)
-        self._password = kwargs.get("password", None)
-        self._pages = self.standardize_pages(kwargs.get("pages", "[0-50]"))
-        self._trim = kwargs.get("trim", True)
-        self._shrink = kwargs.get("shrink", False)
-
-        self._la_char_margin = kwargs.get("char_margin", None)
-        self._la_line_margin = kwargs.get("line_margin", None)
-        self._la_word_margin = kwargs.get("word_margin", None)
-
-    def has_interval(self, interval):
-        return len(interval.split('-')) > 1
-
-    def get_interval(self, interval):
-        return tuple(map(int, interval.split('-')))
-
-    def standardize_pages(self, _pages):
-        pages = []
-        _pages = _pages.replace(' ', '')
-        if _pages.startswith("[") and _pages.endswith("]"):
-            intervals = _pages.replace("[", "").replace("]", "").split(",")
-            for interval in intervals:
-                if self.has_interval(interval):
-                    (i0, i1) = self.get_interval(interval)
-                    for i in range(i0, i1+1):
-                        pages.append(i)
-                else:
-                    (i0,) = self.get_interval(interval)
-                    pages.append(i0)
-            pages.sort()
-        return pages
-
-    def delimiter(self):
-        return self._delimiter
-
-    def pages(self):
-        return self._pages
-
-    def password(self):
-        return self._password
-
-
 class PDFConverter:
 
-    def __init__(self, pdf_file, strategy, config: PDFConverterConfig):
+    def __init__(self, pdf_file, config: PDFConverterConfig):
         self.pdf_file = pdf_file
+        self.csv_file = self.pdf_file.replace(".pdf", ".csv").replace(".PDF", ".csv")
 
-        self.strategy = strategy
+        self.strategy = config.strategy()
         self.config = config
 
         self.cells = []
@@ -178,12 +129,19 @@ class PDFConverter:
 
 
     def write(self):
-        outpath = self.pdf_file.replace(".pdf", ".csv").replace(".PDF", ".csv")
-        csv_builder = CSVBuilder()
-        csv_builder.build(self.cells)
-        csv_builder.write(outpath)
 
-        return outpath
+        opts = {
+            "delimiter": self.config.delimiter()
+        }
+
+        # BUILDER 
+        #
+        #
+        csv_builder = CSVBuilder(**opts)
+        csv_builder.build(self.cells)
+        csv_builder.write(self.csv_file)
+
+        return self.csv_file
 
 
 # parser = PDFParser(pdf_file, parse_strategy, parse_config)
