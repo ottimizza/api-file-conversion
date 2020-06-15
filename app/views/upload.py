@@ -71,4 +71,12 @@ def upload_files():
     # caminho para o arquivo convertido (.csv)
     outpath = converter.csv_file
 
+    @after_this_request
+    def delete_outpath(response):
+        try:
+            os.remove(outpath)
+        except Exception as error:
+            print("Error removing or closing downloaded file handle")
+        return response
+
     return send_file(outpath, attachment_filename='out.csv')
