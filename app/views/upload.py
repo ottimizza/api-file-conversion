@@ -31,6 +31,7 @@ def illegal_arguments_exception_handler(exception):
 def upload_files():
     details = { "files": [] }
     files = []
+    opts = {}
 
     if 'file' in request.files:
         files = [ request.files['file'] ]
@@ -40,6 +41,18 @@ def upload_files():
         raise IllegalArgumentsException("No file provided!")
         # return jsonify({"error": "illegal_arguments", "error_description": "No file provided!"})
 
+    if 'opts' in request.form:
+        opts = request.form['opts']
+    else:
+        opts = {
+            "strategy": "",
+            "delimiter": ";",
+            "pages": "[0-5]",
+            "password": None,
+            "trim": True,
+            "shrink": False
+        }
+    
     print("print getting first from array")
 
     f = files[0]
@@ -68,7 +81,7 @@ def upload_files():
     from conversion import PDFConverter, PDFConverterConfig
     from conversion.strategy import ParseStrategyA
     
-    config = PDFConverterConfig()
+    config = PDFConverterConfig(**opts)
     strategy = ParseStrategyA()
 
     outpath = PDFConverter(filepath, strategy, config) \

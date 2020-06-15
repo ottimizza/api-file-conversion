@@ -113,7 +113,7 @@ class PDFConverterConfig:
 
 class PDFConverter:
 
-    def __init__(self, pdf_file, strategy, config):
+    def __init__(self, pdf_file, strategy, config: PDFConverterConfig):
         self.pdf_file = pdf_file
 
         self.strategy = strategy

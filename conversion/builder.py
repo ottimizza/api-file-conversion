@@ -3,13 +3,18 @@ from conversion.models import Cell, Column
 LINE_MARGIN = 2
 
 class CSVBuilder:
-    
-    def __init__(self):
+    def __init__(self, **kwargs):
         self._cells = {}
         self._columns = []
 
         self._current_col = 0
         self._current_row = 0
+
+        ## 
+        ##
+        self.delimiter = kwargs.get("delimiter", ";")
+
+
         
     def build(self, cells: [Cell]):
         cells.sort(key=lambda cell: (cell.coordinates.y1, cell.coordinates.x1))
@@ -120,10 +125,9 @@ class CSVBuilder:
 
         CSV_FILE = csv_file
         CSV_ENCODING = "UTF-8"
-        CSV_DELIMITER = ";"
+        CSV_DELIMITER = self.delimiter
 
         with open(CSV_FILE, "a", encoding=CSV_ENCODING) as f:
-            print("Rows: {0}".format(self.current_row()))
             for row in range(self.current_row() + 1):
                 for column in self._columns:
                     cell_name = '%s::%s' % (str(column.name), str(row))
