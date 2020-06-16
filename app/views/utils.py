@@ -6,9 +6,9 @@ def allowed_filename(filename, extensions):
         filename.rsplit('.', 1)[1].lower() in extensions
 
 
-def create_tempfile():
+def create_tempfile(delete=False):
     import tempfile
-    return tempfile.NamedTemporaryFile(delete=False)
+    return tempfile.NamedTemporaryFile(delete=delete)
 
 
 def zip(zipname, path):

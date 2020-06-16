@@ -1,23 +1,20 @@
 from abc import ABC, abstractmethod
 
-# from conversion import PDFConverter
 from conversion.models import Cell, Coordinate
 from conversion.utils import trim
 import pdfminer
 
+
+from pdfminer.layout import LTFigure, LTTextBoxHorizontal, LTTextLine
+
 class ParseStrategy(ABC):
 
     @abstractmethod
-    def parse(self, layout, page):
+    def parse(self, layout, page, cells = []):
         pass
 
 
 class ParseStrategyA(ParseStrategy):
-
-    def __init__(self, trim=True):
-        super().__init__()
-
-        self.trim = trim
 
     def get_coordinates(self, layout, page):
         (width, height) = (page.mediabox[2], page.mediabox[3])
@@ -33,8 +30,8 @@ class ParseStrategyA(ParseStrategy):
         content = layout_object.get_text()
 
         # verifica se deve ser feito o trim do texto.
-        if self.trim:
-            content = trim(content)
+        # if self.trim:
+        #     content = trim(content)
 
         content = content.replace('\n', ' ').replace('\r', '') 
         coordinates = Coordinate.from_bbox(bbox)
@@ -44,7 +41,7 @@ class ParseStrategyA(ParseStrategy):
         (width, height) = (page.mediabox[2], page.mediabox[3])
 
         for layout_object in layout:
-            if isinstance(layout_object, pdfminer.layout.LTTextLine):
+            if isinstance(layout_object, LTTextLine):
                 (x1, y1, x2, y2) = self.get_coordinates(layout_object, page)
 
                 cell = self.build_cell(layout_object, (x1, y1, x2, y2))
@@ -52,11 +49,11 @@ class ParseStrategyA(ParseStrategy):
                 cells.append(cell)
 
             # if it's a textbox, recurse for text lines
-            if isinstance(layout_object, pdfminer.layout.LTTextBoxHorizontal):
-               self.parse(layout_object._objs, page, cells)
+            if isinstance(layout_object, LTTextBoxHorizontal):
+                self.parse(layout_object._objs, page, cells)
             
             # if it's a container, recurse
-            elif isinstance(layout_object, pdfminer.layout.LTFigure):
+            elif isinstance(layout_object, LTFigure):
                 self.parse(layout_object._objs, page, cells)
 
         return cells

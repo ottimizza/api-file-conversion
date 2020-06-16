@@ -1,9 +1,9 @@
 from conversion.models import Cell, Column
 
-LINE_MARGIN = 2
 
 class CSVBuilder:
 
+    LINE_MARGIN = 2
     MODE_APPEND = "a"
 
     def __init__(self, **kwargs):
@@ -102,7 +102,7 @@ class CSVBuilder:
         self._current_row += 1
 
     def should_append_row(self, current_y1, previous_y1):
-        return (current_y1 -LINE_MARGIN > previous_y1)# and (current_y1 > previous_y1)
+        return (current_y1 -CSVBuilder.LINE_MARGIN > previous_y1)# and (current_y1 > previous_y1)
 
     ## # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
     ## 
@@ -116,7 +116,7 @@ class CSVBuilder:
         self._current_col += 1
 
     def should_append_col(self, current_y1, previous_y2):
-        return (current_y1 - LINE_MARGIN < previous_y2) and (current_y1 + LINE_MARGIN < previous_y2)
+        return (current_y1 - CSVBuilder.LINE_MARGIN < previous_y2) and (current_y1 + CSVBuilder.LINE_MARGIN < previous_y2)
 
     ## # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
     ## 
