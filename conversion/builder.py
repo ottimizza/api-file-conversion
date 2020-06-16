@@ -29,8 +29,6 @@ class CSVBuilder:
             current_y1 = cell.coordinates.y1
             current_y2 = cell.coordinates.y2
 
-            print(cell, ">>> " + cell.content)
-
             column = Column('', current_x1, current_x2, current_y1, current_y2)
 
             # checking for margin where should break line
