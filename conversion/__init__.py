@@ -138,6 +138,9 @@ class PDFConverter:
             "delimiter": self.config.delimiter()
         }
 
+        import os 
+        os.unlink(self.csv_file)
+
         for page_index in self.pages.keys():
             csv_builder = CSVBuilder(**opts)
 
