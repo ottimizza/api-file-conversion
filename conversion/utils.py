@@ -6,6 +6,9 @@ def trim(text):
     # remove espaços antes e depois da string
     text = re.sub("^[^\S\r\n]", "", text)
     text = re.sub("[^\S\r\n]$", "", text)
+
+    # se termina com quebra remove
+    text = re.sub("[\r\n]$", "", text)
     
     return text
 

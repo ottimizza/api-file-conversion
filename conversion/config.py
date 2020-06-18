@@ -1,4 +1,4 @@
-from conversion.strategy import ParseStrategy, ParseStrategyA
+from conversion.strategy import ParseStrategy, ParseStrategyA, ParseStrategyB, ParseStrategyC
 from conversion.utils import CustomArrayParser
 
 class PDFConverterConfig:
@@ -32,8 +32,8 @@ class PDFConverterConfig:
     def strategy(self):
         switcher = {
             "LTTextLine": ParseStrategyA(),
-            "LTTextBox_UC": ParseStrategyA(), # B
-            "LTTextBox_MC": ParseStrategyA(), # C
+            "LTTextBoxUC": ParseStrategyB(), # B
+            "LTTextBoxMC": ParseStrategyC(), # C
         }  
         return switcher.get(self._strategy, ParseStrategyA())
 

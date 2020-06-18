@@ -7,10 +7,11 @@ import pdfminer
 
 from pdfminer.layout import LTFigure, LTTextBoxHorizontal, LTTextLine
 
+
 class ParseStrategy(ABC):
 
     @abstractmethod
-    def parse(self, layout, page, cells = []):
+    def parse(self, layout, page, config, cells=[]):
         pass
 
 
@@ -19,39 +20,40 @@ class ParseStrategyA(ParseStrategy):
     def get_coordinates(self, layout, page):
         (width, height) = (page.mediabox[2], page.mediabox[3])
 
-        (x1, _y1, x2, _y2) = (layout.bbox[0], layout.bbox[1], layout.bbox[2], layout.bbox[3])
+        (x1, _y1, x2, _y2) = (
+            layout.bbox[0], layout.bbox[1], layout.bbox[2], layout.bbox[3])
 
         y1 = height - _y1
         y2 = height - _y2
 
         return (x1, y1, x2, y2)
 
-    def build_cell(self, layout_object, bbox):
+    def build_cell(self, layout_object, bbox, config):
         content = layout_object.get_text()
 
         # verifica se deve ser feito o trim do texto.
-        # if self.trim:
-        #     content = trim(content)
+        if self.trim:
+            content = trim(content)
 
-        content = content.replace('\n', ' ').replace('\r', '') 
+        content = content.replace('\n', ' ').replace('\r', '')
         coordinates = Coordinate.from_bbox(bbox)
         return Cell('', content, coordinates)
 
-    def parse(self, layout, page, cells = []):
+    def parse(self, layout, page, config, cells=[]):
         (width, height) = (page.mediabox[2], page.mediabox[3])
 
         for layout_object in layout:
             if isinstance(layout_object, LTTextLine):
                 (x1, y1, x2, y2) = self.get_coordinates(layout_object, page)
 
-                cell = self.build_cell(layout_object, (x1, y1, x2, y2))
+                cell = self.build_cell(layout_object, (x1, y1, x2, y2), config)
 
                 cells.append(cell)
 
             # if it's a textbox, recurse for text lines
             if isinstance(layout_object, LTTextBoxHorizontal):
                 self.parse(layout_object._objs, page, cells)
-            
+
             # if it's a container, recurse
             elif isinstance(layout_object, LTFigure):
                 self.parse(layout_object._objs, page, cells)
@@ -59,41 +61,88 @@ class ParseStrategyA(ParseStrategy):
         return cells
 
 
-# class ParseStrategyB(ParseStrategy):
+class ParseStrategyB(ParseStrategy):
 
-#     def get_coordinates(self, layout, page):
-#         (width, height) = (page.mediabox[2], page.mediabox[3])
+    def get_coordinates(self, layout, page):
+        (width, height) = (page.mediabox[2], page.mediabox[3])
 
-#         (x1, _y1, x2, _y2) = (layout.bbox[0], layout.bbox[1], layout.bbox[2], layout.bbox[3])
+        (x1, _y1, x2, _y2) = (
+            layout.bbox[0], layout.bbox[1], layout.bbox[2], layout.bbox[3])
 
-#         y1 = height - _y1
-#         y2 = height - _y2
+        y1 = height - _y1
+        y2 = height - _y2
 
-#         return (x1, y1, x2, y2)
+        return (x1, y1, x2, y2)
 
-#     def build_cell(self, layout_object, bbox):
-#         content = layout_object.get_text().replace('\n', ' ').replace('\r', '') 
-#         coordinates = Coordinate.from_bbox(bbox)
-#         return Cell('', content, coordinates)
+    def build_cell(self, layout_object, bbox, config):
+        content = layout_object.get_text()
 
-#     def parse(self, layout, pdf_converter_object: PDFConverter):
-#         page = pdf_converter_object.current_page
+        # verifica se deve ser feito o trim do texto.
+        if self.trim:
+            content = trim(content)
 
-#         (width, height) = (page.mediabox[2], page.mediabox[3])
+        content = content.replace('\n', ' ').replace('\r', '')
+        coordinates = Coordinate.from_bbox(bbox)
+        return Cell('', content, coordinates)
 
-#         for layout_object in layout:
-#             if isinstance(layout_object, pdfminer.layout.LTTextBoxHorizontal):
-#                 (x1, y1, x2, y2) = self.get_coordinates(layout_object, page)
+    def parse(self, layout, page, config, cells=[]):
+        (width, height) = (page.mediabox[2], page.mediabox[3])
 
-#                 cell = self.build_cell(layout_object, (x1, y1, x2, y2))
+        for layout_object in layout:
+            if isinstance(layout_object, LTTextBoxHorizontal):
+                (x1, y1, x2, y2) = self.get_coordinates(layout_object, page)
 
-#                 pdf_converter_object.cells.append(cell)
+                cell = self.build_cell(layout_object, (x1, y1, x2, y2), config)
 
-#             # if it's a container, recurse
-#             elif isinstance(layout_object, pdfminer.layout.LTFigure):
-#                 self.parse(layout_object._objs, pdf_converter_object)
+                cells.append(cell)
 
-#         return pdf_converter_object.cells
+            # if it's a container, recurse
+            elif isinstance(layout_object, LTFigure):
+                self.parse(layout_object._objs, page, cells)
+
+        return cells
+
+
+class ParseStrategyC(ParseStrategy):
+
+    def get_coordinates(self, layout, page):
+        (width, height) = (page.mediabox[2], page.mediabox[3])
+
+        (x1, _y1, x2, _y2) = (
+            layout.bbox[0], layout.bbox[1], layout.bbox[2], layout.bbox[3])
+
+        y1 = height - _y1
+        y2 = height - _y2
+
+        return (x1, y1, x2, y2)
+
+    def build_cell(self, layout_object, bbox, config):
+        content = layout_object.get_text()
+
+        # verifica se deve ser feito o trim do texto.
+        if config.trim():
+            content = trim(content)
+
+        content = content.replace('\n', config.delimiter()).replace('\r', '')
+        coordinates = Coordinate.from_bbox(bbox)
+        return Cell('', content, coordinates)
+
+    def parse(self, layout, page, config, cells=[]):
+        (width, height) = (page.mediabox[2], page.mediabox[3])
+
+        for layout_object in layout:
+            if isinstance(layout_object, LTTextBoxHorizontal):
+                (x1, y1, x2, y2) = self.get_coordinates(layout_object, page)
+
+                cell = self.build_cell(layout_object, (x1, y1, x2, y2), config)
+
+                cells.append(cell)
+
+            # if it's a container, recurse
+            elif isinstance(layout_object, LTFigure):
+                self.parse(layout_object._objs, page, cells)
+
+        return cells
 
 
 # class ParseStrategyC(ParseStrategy):
@@ -109,7 +158,7 @@ class ParseStrategyA(ParseStrategy):
 #         return (x1, y1, x2, y2)
 
 #     def build_cell(self, layout_object, bbox):
-#         content = layout_object.get_text().replace('\n', ' ').replace('\r', '') 
+#         content = layout_object.get_text().replace('\n', ' ').replace('\r', '')
 #         coordinates = Coordinate.from_bbox(bbox)
 #         return Cell('', content, coordinates)
 
@@ -146,7 +195,7 @@ class ParseStrategyA(ParseStrategy):
 #         return (x1, y1, x2, y2)
 
 #     def build_cell(self, layout_object, bbox):
-#         content = layout_object.get_text().replace('\n', ' ').replace('\r', '') 
+#         content = layout_object.get_text().replace('\n', ' ').replace('\r', '')
 #         coordinates = Coordinate.from_bbox(bbox)
 #         return Cell('', content, coordinates)
 
@@ -162,7 +211,7 @@ class ParseStrategyA(ParseStrategy):
 #                 box_cell = self.build_cell(layout_object, self.get_coordinates(layout_object, page))
 #                 print(LN, "LTTextBox ...: ", box_cell)
 #                 print(layout_object.get_text())
-            
+
 #                 LN = "\t"
 #                 print("---------------------------------------------------------")
 #                 for child_layout in layout_object._objs:
@@ -188,7 +237,7 @@ class ParseStrategyA(ParseStrategy):
 #             # if isinstance(layout_object, pdfminer.layout.LTTextLine):
 #             #     (x1, y1, x2, y2) = self.get_coordinates(layout_object, page)
 #             #     x1, x2 = self.x1, self.x2
-                
+
 #             #     print(x1, y1, x2, y2)
 
 #             #     cell = self.build_cell(layout_object, (x1, y1, x2, y2))
@@ -199,7 +248,7 @@ class ParseStrategyA(ParseStrategy):
 #             # if isinstance(layout_object, pdfminer.layout.LTTextBoxHorizontal):
 #             #     (self.x1, y1, self.x2, y2) = self.get_coordinates(layout_object, page)
 #             #     self.parse(layout_object._objs, pdf_converter_object)
-            
+
 #             # if it's a container, recurse
 #             elif isinstance(layout_object, pdfminer.layout.LTFigure):
 #                 self.parse(layout_object._objs, pdf_converter_object)

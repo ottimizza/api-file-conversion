@@ -85,7 +85,7 @@ class PDFConverter:
             # utiliza a estratégia passada como parametro, para realizar
             # a extração das células de texto da página atual.
 
-            parsed_cells = self.strategy.parse(layout, page, [])
+            parsed_cells = self.strategy.parse(layout, page, self.config, [])
 
             print("""
                 Cells: {0}
