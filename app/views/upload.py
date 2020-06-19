@@ -18,6 +18,7 @@ upload_blueprint = Blueprint('upload', __name__)
 
 @upload_blueprint.errorhandler(Exception)
 def illegal_arguments_exception_handler(exception):
+    print(exception)
     return {"error": "illegal_arguments"}
 
 

@@ -32,7 +32,7 @@ class ParseStrategyA(ParseStrategy):
         content = layout_object.get_text()
 
         # verifica se deve ser feito o trim do texto.
-        if self.trim:
+        if config.trim():
             content = trim(content)
 
         content = content.replace('\n', ' ').replace('\r', '')
@@ -78,7 +78,7 @@ class ParseStrategyB(ParseStrategy):
         content = layout_object.get_text()
 
         # verifica se deve ser feito o trim do texto.
-        if self.trim:
+        if config.trim():
             content = trim(content)
 
         content = content.replace('\n', ' ').replace('\r', '')
