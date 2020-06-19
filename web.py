@@ -1,5 +1,7 @@
 # from app import create_app
 from flask import Flask
+from flask_cors import CORS, cross_origin
+
 import os
 
 port = int(os.environ.get("PORT", 5000))
@@ -11,6 +13,8 @@ application = Flask(__name__)
 application.config.from_object('settings')
 
 # cors...
+cors = CORS(application)
+
 
 # db...
 
